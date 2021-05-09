@@ -1,13 +1,51 @@
+:root {
+  /* palette */
+  --color-text-contrast: #fff;
+  --color-action: #0062e6;
+  --color-action-darker: #0451b6;
+  --color-paper: #fff3e0;
+  --color-neutral: #e0e0e0;
+  --color-neutral-darker: #757575;
+  /* radius */
+  --radius: 0.25rem;
+  /* spacing */
+  --spacing-zero: 0;
+  --spacing-xss: 0.25re;
+  --spacing-xs: 0.5rem;
+  --spacing-s: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-ml: 1.25rem;
+  --spacing-l: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 2.5rem;
+  --spacing-3xl: 3rem;
+  --spacing-4xl: 4rem;
+  --spacing-5xl: 5rem;
+  --spacing-6xl: 6rem;
+  --spacing-7xl: 8rem;
+  /* typography */
+  --font-bold: 800;
+  --font-semibold: 600;
+  --font-normal: 400;
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-base: 1rem;
+  --font-lg: 1.125rem;
+  --font-xl: 1.25rem;
+  --font-2xl: 1.5rem;
+  --font-3xl: 1.875rem;
+  --font-4xl: 2.25rem;
+  --font-5xl: 3rem;
+  --font-6xl: 4rem;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  line-height: 1.5;
+  background-color: var(--color-paper);
 }

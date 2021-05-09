@@ -1,0 +1,52 @@
+import { Dialog, Button, ExampleBlock } from "../";
+
+# `<Dialog />`
+
+## Summary 💭
+
+The aim of this proposal is to illustrate the possible interface for a **Dialog component** in React ⚛ flexible enough to suit different use cases.
+
+## Basic example 📓
+
+<ExampleBlock>
+  <Button>Open Dialog</Button>
+</ExampleBlock>
+
+```tsx
+import { Dialog, Button } from './components'
+
+<Dialog.Trigger as={Button}>Open Dialog</Dialog.Trigger>
+// ...
+<Dialog isOpen={true}>
+  <Dialog.Header
+    title="Delete User?"
+    onClose={close}
+  />
+  <Dialog.Content>
+    <Text>This will permanently remove John Doe, are you sure?</Text>
+  </Dialog.Content>
+  <Dialog.Footer>
+    <ActionButtons>
+      <Button variant="secondary">Cancel</Button>
+      <Button>Delete</Button>
+    </ActionButtons>
+  </Dialog.Footer>
+</Dialog>
+```
+
+## Motivation ☕️
+
+The idea is to have a `<Dialog />` component that can be customized to server different use cases.
+
+Any content can be served within the dialog, on top of that, the title can be customized as well as whether the close `X` option appears or not.
+
+Both the **header** and the **footer** can be optionally rendered.
+
+The contents of the **footer** can be customized as well.
+
+The idea is that this dialog is flexible enough to suit different use-cases like:
+
+- _editing a document_
+- _warning before applying some changes_
+- _contacting support_
+- _deleting an entity_
