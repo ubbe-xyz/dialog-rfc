@@ -118,13 +118,13 @@ We render the dialog on a portal to prevent `z-index` overlaps amongst other iss
 
 ### Keyboard navigation
 
-According to [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal), when opening the `<Dialog.Header />` (if present, if not `<Dialog.Content />`), should be on focus.
+According to [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal), when opening the dialog, its first section should be on focus.
 
 When pressing `TAB`, focus should should move to the next **dialog section**, pressing `TAB + SHIFT` should move focus to the previous **dialog section**.
 
 Pressing `ESC` should close the dialog.
 
-Pressing `ENTER` or `SPACE` when the dialog trigger is focused should open the dialog.
+Pressing `ENTER` or `SPACE` when the element that triggers the dialog is focused should open the dialog.
 
 All this focus management should be handled internally by the component, the user of the dialog should not need to declare any props to manage this.
 
@@ -143,10 +143,10 @@ function MyComponent() {
 
   return (
     <>
-      <Dialog.Trigger as={Button} onClick={toggleDialog}>
-        Open Dialog
-      </Dialog.Trigger>
       <Dialog isOpen={isOpen} onClose={closeDialog}>
+        <Dialog.Trigger as={Button} onClick={toggleDialog}>
+          Open Dialog
+        </Dialog.Trigger>
         <Dialog.Header onClose={toggleDialog}>Edit datastream</Dialog.Header>
         <Dialog.Content>foo</Dialog.Content>
         <Dialog.Footer>
@@ -190,7 +190,7 @@ Using `<Dialog.Trigger />` ensures that the relation between the dialog disclosu
 
 ## Drawbacks 👻
 
-Implementing a fully accessible and customizable `<Dialog />` component is not an easy task. Instead of writing our own and having to maintain the logic we could built on top of [Reakit#Dialog](https://reakit.io/docs/dialog/) or [ReactUI#Dialog](https://reach.tech/dialog/) which are un-opinionated on styling but would take away the burden of accessibility from us.
+Implementing a fully accessible and customizable `<Dialog />` component is not an easy task. Instead of writing our own and having to maintain the logic we could build on top of [Reakit#Dialog](https://reakit.io/docs/dialog/) or [ReactUI#Dialog](https://reach.tech/dialog/) which are un-opinionated on styling but would take away the burden of accessibility from us.
 
 ## Alternatives ⤴
 
@@ -198,15 +198,15 @@ As mentioned, we can use [Reakit#Dialog](https://reakit.io/docs/dialog/) or [Rea
 
 ## Adoption strategy ⚙️
 
-Adoption strategy should be pretty straightforward and users should be able to use it straightaway without conflicting with usage of other dialog components.
+Adoption strategy should be pretty straightforward and users should be able to use it straightaway without conflicting with other dialog components.
 
-We could hire an accessibility expert to QA our implementation to make sure it's easy to navigate with assistive technology despite our tests.
+We could make an accessibility expert QA our implementation to make sure it's easy to navigate with assistive technology despite our tests.
 
 The dialog should play well in both desktop and mobile devices as it's been built taking small viewports into consideration.
 
 ## How we teach this 🧵
 
-This repository shows examples of using this component in isolation with all its possible variations. The tests as well should document as well how to use the component. We can pair-program with users of this component when they try to implement it and gather feedback on its API and behavior.
+This repository shows examples of using this component in isolation with all its possible variations. The tests as well should document how to use the component. We can pair-program with users of this component when trying to implement it and gather feedback on its API and behavior.
 
 ## Unresolved questions ❓
 
