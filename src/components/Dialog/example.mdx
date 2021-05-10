@@ -1,5 +1,5 @@
 import { Dialog } from "../";
-import { BasicExample } from "./examples";
+import { BasicExample, ComplexExample } from "./examples";
 
 # `<Dialog />`
 
@@ -35,26 +35,22 @@ import { Dialog, Button } from './components'
 
 ## Motivation ☕️
 
-The idea is to have a `<Dialog />` component that can be customized to server different use cases.
-
-Any content can be served within the dialog, on top of that, the title can be customized as well as whether the close `X` option appears or not.
-
-Both the **header** and the **footer** can be optionally rendered.
-
-The contents of the **footer** can be customized as well.
-
-The idea is that this dialog is flexible enough to suit different use-cases like:
+We want to have a `<Dialog />` component that can be customized to server different use cases and different content, to suit different use-cases like:
 
 - _editing a document_
 - _warning before applying some changes_
 - _contacting support_
 - _deleting an entity_
 
+<ComplexExample />
+
+We also want to able to trigger a dialog from different type of elements (buttons, links, etc...) and from multiple locations within a single page.
+
 ## Detailed design 📐
 
 This new Dialog component should be:
 
-- **uncontrolled component**
+- **explicit open/close state**
   - _open/close state will need to be managed outside of the component_
 - **agnostic on child structure**
   - _leveraging [dot notation](https://reactjs.org/docs/jsx-in-depth.html#using-dot-notation-for-jsx-type) to let consumers decide what to render_
@@ -64,3 +60,151 @@ This new Dialog component should be:
   - _making sure it adheres [to WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal) as much as possible_
 - **portal first**
   - _leveraging [React Portals](https://reactjs.org/docs/portals.html) the dialog will mount at the root of the `<body>` in the HTML, no matter where it's rendered in the React tree to prevent issues with overlays and `z-index`_
+
+We should be able to render the dialog with/without a header/footer:
+
+```tsx
+// without header and footer
+<Dialog isOpen={true}>
+  <Dialog.Content>
+    <span>Hello world</span>
+  </Dialog.Content>
+</Dialog>
+```
+
+```tsx
+// with a header
+<Dialog isOpen={true}>
+  {/* if `onClose` wasn't supplied the 'x' button won't render */}
+  <Dialog.Header onClose={toggleDialog}>Greet user</Dialog.Header>
+  <Dialog.Content>
+    <span>Hello world</span>
+  </Dialog.Content>
+</Dialog>
+```
+
+```tsx
+// with a footer
+<Dialog isOpen={true}>
+  <Dialog.Content>
+    <span>Hello world</span>
+  </Dialog.Content>
+  <Dialog.Footer>
+    <Button>OK</Button>
+  </Dialog.Footer>
+</Dialog>
+```
+
+### Setup
+
+As a pre-requesite for `<Dialog />` to render properly, we need to render its root next to the application component tree root:
+
+```tsx
+import { Dialog } from './components'
+
+export function App() {
+  return (
+    <Router />
+    <Dialog.Root />
+  )
+}
+```
+
+This ensures that the **portal entry point** for the dialog is available and the dialog knows where to render itself. You can read more about [React Portals](https://reactjs.org/docs/portals.html) here.
+
+We render the dialog on a portal to prevent `z-index` overlaps amongst other issues.
+
+### Keyboard navigation
+
+According to [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal), when opening the `<Dialog.Header />` (if present), if not `<Dialog.Content />`, should be on focus.
+
+When pressing `TAB`, focus should move to the next **dialog section**, pressing `TAB + SHIFT` should move focus to the previous **dialog section**.
+
+Pressing `ESC` should close the dialog.
+
+All this focus management should be handled internally by the component, the user of the dialog should not need to declare any props to manage this.
+
+### State management
+
+All state management is handled by the component rendering the dialog. Whether the dialog is open or not is controlled though the `<Dialog isOpen />` prop:
+
+```tsx
+function MyComponent() {
+  const [isOpen, toggleOpen] = React.useState(false);
+  const toggleDialog = () => toggleOpen((s) => !s);
+  const onApply = () => {
+    window.alert("changes applied");
+    toggleDialog();
+  };
+
+  return (
+    <>
+      <Dialog.Trigger as={Button} onClick={toggleDialog}>
+        Open Dialog
+      </Dialog.Trigger>
+      <Dialog isOpen={isOpen} onClose={closeDialog}>
+        <Dialog.Header onClose={toggleDialog}>Edit datastream</Dialog.Header>
+        <Dialog.Content>foo</Dialog.Content>
+        <Dialog.Footer>
+          <Button onClick={onApply}>Apply</Button>
+        </Dialog.Footer>
+      </Dialog>
+    </>
+  );
+}
+```
+
+This provides a lot of flexbility given the dialog can be open / closed in different situations without the need for the `<Dialog />` to know explicitly which child click is gonna cause to close it.
+
+There's three main ways to close the dialog:
+
+1. _pressing on the overlay behind the dialog_
+2. _pressing on the 'x' button of the dialog header_
+3. _pressing 'ESC' when the dialog is open_
+
+`<Dialog onClose />` will take care of **1.** and **3.** while `<Dialog.Header onClose />` will take care of **2.**.
+
+### Accessibility
+
+`<Dialog />` already implements all the relevant [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal) roles and labels to adhere to the specification without the need for the user to assign manually aria attributes (aside from labelling `<Dialog />`).
+
+⚠️ &nbsp;It's important to use `<Dialog.Trigger />` to render the dialog disclosure. You can pass any component to it:
+
+```tsx
+  <Dialog.Trigger as={Link} onClick={openDialog}>
+    Link
+  </Dialog.Trigger>
+  <Dialog.Trigger as="button" onClick={openDialog}>
+    Plain button
+  </Dialog.Trigger>
+  <Dialog.Trigger as={SecondaryButton} onClick={openDialog}>
+    Secondary button
+  </Dialog.Trigger>
+```
+
+This ensure that that the relation between the dialog disclosure and the dialog component is marked correctly via ARIA attributes for assistive devices.
+It also makes the trigger launch the dialog when the user press `ENTER` or `SPACE` as specified by **WAI-ARIA**.
+
+## Drawbacks 👻
+
+Implementing a fully accessible and customizable `<Dialog />` component is not an easy task. Instead of writing our own and having to maintain the logic we could built on top of [Reakit#Dialog](https://reakit.io/docs/dialog/) or [ReactUI#Dialog](https://reach.tech/dialog/) which are un-opinionated on styling but would take away the burden of ensuring accessibility from us.
+
+## Alternatives ⤴
+
+As mentioned, we can use [Reakit#Dialog](https://reakit.io/docs/dialog/) or [ReactUI#Dialog](https://reach.tech/dialog/) and apply our own styling, just wrapping them in our library. However, this approach would make us force to sync major releases of our library with theirs when applying updates.
+
+## Adoption strategy ⚙️
+
+Adoption strategy should be pretty straightforward and users should be able to use it straightaway without conflicting with usage of other dialog components.
+
+We could hire an accessibility expert to QA our implementation to make sure it's easy to navigate with assistive technology despite our tests.
+
+The dialog should play well in both desktop and mobile devices as it's been built taking small viewports into consideration.
+
+## How we teach this 🧵
+
+This repository shows examples of using this component in isolation with all its possible variations. The tests as well should document as well how to use the component. We can pair-program with users of this component when they try to implement it and gather feedback on its API and behavior.
+
+## Unresolved questions ❓
+
+None for now.

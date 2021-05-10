@@ -50,3 +50,7 @@ export const Button = styled.button<Props>`
         `
       : null}
 `;
+
+export const SecondaryButton = (props: Props) => (
+  <Button variant="secondary" {...props} />
+);

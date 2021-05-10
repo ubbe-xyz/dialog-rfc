@@ -9,14 +9,14 @@ interface Props extends TabbableProps {
 
 const Section = styled(Tabbable)`
   ${sectionStyles}
-  min-height: 4rem;
+  min-height: 3.5rem;
 `;
 
 export const DialogContent = React.forwardRef<HTMLDivElement, Props>(
   ({ children, ...rest }, ref) => {
     return (
       <Section ref={ref} {...rest}>
-        <span>{children}</span>
+        {children}
       </Section>
     );
   }

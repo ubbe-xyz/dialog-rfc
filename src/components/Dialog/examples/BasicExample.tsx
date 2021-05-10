@@ -9,8 +9,13 @@ export function BasicExample() {
 
   return (
     <ExampleBlock>
-      <Button onClick={openDialog}>Open Dialog</Button>
-      <Dialog isOpen={visible} onClose={closeDialog} aria-label="Delete user">
+      <Dialog
+        controlId="delete-1"
+        isOpen={visible}
+        onClose={closeDialog}
+        aria-label="Delete user"
+      >
+        <Dialog.Trigger onClick={openDialog}>Delete user</Dialog.Trigger>
         <Dialog.Header title="Delete user?" onClose={closeDialog} />
         <Dialog.Content>
           This will permanently delete John Doe. This action cannot be undone.

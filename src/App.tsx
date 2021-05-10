@@ -4,6 +4,7 @@ import { Wrapper } from "./docs";
 /* eslint-disable import/no-webpack-loader-syntax */
 // @ts-ignore
 import DialogExample from "!babel-loader!@mdx-js/loader!./components/Dialog/example.mdx";
+import { Dialog } from "./components";
 
 export function App() {
   return (
@@ -11,7 +12,7 @@ export function App() {
       <Wrapper>
         <DialogExample />
       </Wrapper>
-      <div id="dialog-root" />
+      <Dialog.Root />
     </MDXProvider>
   );
 }

@@ -6,22 +6,25 @@ import React, {
   cloneElement,
 } from "react";
 import ReactDOM from "react-dom";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { useDialogPortal } from "../../hooks";
 import { DialogContent } from "./DialogContent";
 import { DialogHeader } from "./DialogHeader";
 import { DialogFooter } from "./DialogFooter";
+import { DialogTrigger } from "./DialogTrigger";
 
 type DivProps = React.HTMLAttributes<HTMLDivElement>;
+type DialogContextType = { isOpen: boolean; id: string };
 
 interface Props extends DivProps {
   ["aria-label"]: string;
   isOpen: boolean;
   onClose: () => void;
+  controlId: string;
 }
 
 const Root = styled.div`
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   overflow-y: scroll;
@@ -45,13 +48,29 @@ const Overlay = styled.div`
   z-index: 2;
 `;
 
+Dialog.Trigger = DialogTrigger;
 Dialog.Header = DialogHeader;
 Dialog.Content = DialogContent;
 Dialog.Footer = DialogFooter;
+Dialog.Root = () => <div id="dialog-root" />;
 
-export function Dialog({ children, isOpen, onClose }: Props) {
+export const DialogContext = React.createContext<DialogContextType>({
+  isOpen: false,
+  id: "dialog",
+});
+
+export function Dialog({ children, isOpen, controlId, onClose }: Props) {
   const $root = useDialogPortal();
   const firstChildRef = useRef<HTMLDivElement>(null);
+  const dialogChildren = Children.toArray(children);
+
+  const [trigger] = dialogChildren.filter(
+    (child: any) => child.type === DialogTrigger
+  );
+
+  const sectionChild = dialogChildren.filter(
+    (child: any) => child.type !== DialogTrigger
+  );
 
   const handleKey: KeyboardEventHandler = ({ key }) => {
     if (key === "Escape") onClose();
@@ -62,32 +81,40 @@ export function Dialog({ children, isOpen, onClose }: Props) {
     if (isOpen) window.setTimeout(() => firstChildRef?.current?.focus(), 100);
   }, [isOpen]);
 
-  return ReactDOM.createPortal(
-    isOpen ? (
-      <>
-        <Overlay onClick={onClose} />
-        <Root>
-          {Children.map(children, (child, i) => {
-            const currentChild = child as any;
-            const allowedChild = [DialogFooter, DialogContent, DialogHeader];
+  return (
+    <DialogContext.Provider value={{ isOpen, id: controlId }}>
+      {trigger}
+      {ReactDOM.createPortal(
+        isOpen ? (
+          <>
+            <Overlay onClick={onClose} />
+            <Root>
+              {sectionChild.map((child: any, i) => {
+                const allowedChild = [
+                  DialogFooter,
+                  DialogContent,
+                  DialogHeader,
+                ];
 
-            if (
-              !currentChild ||
-              typeof currentChild !== "object" ||
-              !allowedChild.includes(currentChild.type)
-            )
-              throw new Error(
-                "[Dialog]: the only childs supported by Dialog are: `<Dialog.Header />`, `<Dialog.Content />` and `<Dialog.Footer />`"
-              );
+                if (
+                  !child ||
+                  typeof child !== "object" ||
+                  !allowedChild.includes(child.type)
+                )
+                  throw new Error(
+                    "[Dialog]: the only child supported by Dialog are: `<Dialog.Header />`, `<Dialog.Content />` and `<Dialog.Footer />`"
+                  );
 
-            return cloneElement(currentChild, {
-              onKeyDown: handleKey,
-              ref: i === 0 ? firstChildRef : null,
-            });
-          })}
-        </Root>
-      </>
-    ) : null,
-    $root
+                return cloneElement(child, {
+                  onKeyDown: handleKey,
+                  ref: i === 0 ? firstChildRef : null,
+                });
+              })}
+            </Root>
+          </>
+        ) : null,
+        $root
+      )}
+    </DialogContext.Provider>
   );
 }
