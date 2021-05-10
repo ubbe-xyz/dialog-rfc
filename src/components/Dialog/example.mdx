@@ -192,6 +192,8 @@ Using `<Dialog.Trigger />` ensures that the relation between the dialog disclosu
 
 Implementing a fully accessible and customizable `<Dialog />` component is not an easy task. Instead of writing our own and having to maintain the logic we could build on top of [Reakit#Dialog](https://reakit.io/docs/dialog/) or [ReactUI#Dialog](https://reach.tech/dialog/) which are un-opinionated on styling but would take away the burden of accessibility from us.
 
+Right now, `<Dialog.Trigger />` needs to be within `<Dialog />`, which is strange as it sits next to `<Dialog.Header />`, `<Dialog.Content />` and `<Dialog.Footer />`. The reason being that the trigger connects to a context to know whether the dialog is open or not and hence apply the `aria-expanded` and `aria-controls` attributes properly. We could investigate renaming or exporting extra-layers to make this less awkard.
+
 ## Alternatives ⤴
 
 As mentioned, we can use [Reakit#Dialog](https://reakit.io/docs/dialog/) or [ReactUI#Dialog](https://reach.tech/dialog/) and apply our own styling, just wrapping them in our library. However, this approach would make us force to sync major releases of our library with theirs when applying updates.
