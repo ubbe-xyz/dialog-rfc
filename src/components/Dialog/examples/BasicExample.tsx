@@ -9,12 +9,7 @@ export function BasicExample() {
 
   return (
     <ExampleBlock>
-      <Dialog
-        controlId="delete-1"
-        isOpen={visible}
-        onClose={closeDialog}
-        aria-label="Delete user"
-      >
+      <Dialog isOpen={visible} onClose={closeDialog} aria-label="Delete user">
         <Dialog.Trigger onClick={openDialog}>Delete user</Dialog.Trigger>
         <Dialog.Header title="Delete user?" onClose={closeDialog} />
         <Dialog.Content>

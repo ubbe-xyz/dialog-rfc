@@ -21,12 +21,7 @@ function DeleteDialog() {
 
   return (
     <>
-      <Dialog
-        controlId="delete-2"
-        isOpen={visible}
-        onClose={closeDialog}
-        aria-label="Delete user"
-      >
+      <Dialog isOpen={visible} onClose={closeDialog} aria-label="Delete user">
         <Dialog.Trigger onClick={openDialog}>Delete user</Dialog.Trigger>
         <Dialog.Header title="Delete user?" onClose={closeDialog} />
         <Dialog.Content>
@@ -56,12 +51,7 @@ function ApplyDialog() {
 
   return (
     <>
-      <Dialog
-        controlId="apply-changes"
-        isOpen={visible}
-        onClose={closeDialog}
-        aria-label="Apply changes"
-      >
+      <Dialog isOpen={visible} onClose={closeDialog} aria-label="Apply changes">
         <Dialog.Trigger as={SecondaryButton} onClick={openDialog}>
           Apply changes
         </Dialog.Trigger>
@@ -103,12 +93,7 @@ function AlertDialog() {
 
   return (
     <>
-      <Dialog
-        controlId="alert"
-        isOpen={visible}
-        onClose={closeDialog}
-        aria-label="Alert"
-      >
+      <Dialog isOpen={visible} onClose={closeDialog} aria-label="Alert">
         <Dialog.Trigger onClick={openDialog}>Trigger warning</Dialog.Trigger>
         <Dialog.Header title="Alert" onClose={closeDialog} />
         <Dialog.Content>
@@ -127,7 +112,6 @@ function ContactSupport() {
   return (
     <>
       <Dialog
-        controlId="contact-support"
         isOpen={visible}
         onClose={closeDialog}
         aria-label="Contact support"

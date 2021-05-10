@@ -23,6 +23,7 @@ export function DialogTrigger({ as = Button, onClick, ...rest }: Props) {
       aria-expanded={isOpen}
       role="button"
       onKeyDown={handleKey}
+      onClick={onClick}
       {...rest}
     />
   );

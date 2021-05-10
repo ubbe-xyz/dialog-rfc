@@ -20,7 +20,6 @@ interface Props extends DivProps {
   ["aria-label"]: string;
   isOpen: boolean;
   onClose: () => void;
-  controlId: string;
 }
 
 const Root = styled.div`
@@ -59,7 +58,7 @@ export const DialogContext = React.createContext<DialogContextType>({
   id: "dialog",
 });
 
-export function Dialog({ children, isOpen, controlId, onClose }: Props) {
+export function Dialog({ children, isOpen, onClose, ...rest }: Props) {
   const $root = useDialogPortal();
   const firstChildRef = useRef<HTMLDivElement>(null);
   const dialogChildren = Children.toArray(children);
@@ -82,13 +81,13 @@ export function Dialog({ children, isOpen, controlId, onClose }: Props) {
   }, [isOpen]);
 
   return (
-    <DialogContext.Provider value={{ isOpen, id: controlId }}>
+    <DialogContext.Provider value={{ isOpen, id: rest["aria-label"] }}>
       {trigger}
       {ReactDOM.createPortal(
         isOpen ? (
           <>
-            <Overlay onClick={onClose} />
-            <Root>
+            <Overlay data-testid="DIALOG_OVERLAY" onClick={onClose} />
+            <Root {...rest}>
               {sectionChild.map((child: any, i) => {
                 const allowedChild = [
                   DialogFooter,
