@@ -1,6 +1,6 @@
 import React from "react";
 import { MDXProvider as MDXProviderBase } from "@mdx-js/react";
-import { CodeBlock } from "./CodeBlock";
+import { CodeBlock } from "../CodeBlock";
 
 type Props = {
   children: React.ReactNode;

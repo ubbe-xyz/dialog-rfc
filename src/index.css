@@ -1,11 +1,14 @@
 :root {
   /* palette */
-  --color-text-contrast: #fff;
+  --color-white: #fff;
   --color-action: #0062e6;
   --color-action-darker: #0451b6;
   --color-paper: #fff3e0;
+  --color-smoke: #eceff1;
   --color-neutral: #e0e0e0;
   --color-neutral-darker: #757575;
+  --color-error: #e53935;
+  --color-error-darker: #d32f2f;
   /* radius */
   --radius: 0.25rem;
   /* spacing */
@@ -37,6 +40,11 @@
   --font-4xl: 2.25rem;
   --font-5xl: 3rem;
   --font-6xl: 4rem;
+  /* shadow */
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 body {

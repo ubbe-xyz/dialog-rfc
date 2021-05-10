@@ -1,4 +1,5 @@
-import { Dialog, Button, ExampleBlock } from "../";
+import { Dialog } from "../";
+import { BasicExample } from "./examples";
 
 # `<Dialog />`
 
@@ -8,9 +9,7 @@ The aim of this proposal is to illustrate the possible interface for a **Dialog 
 
 ## Basic example 📓
 
-<ExampleBlock>
-  <Button>Open Dialog</Button>
-</ExampleBlock>
+<BasicExample />
 
 ```tsx
 import { Dialog, Button } from './components'
@@ -50,3 +49,18 @@ The idea is that this dialog is flexible enough to suit different use-cases like
 - _warning before applying some changes_
 - _contacting support_
 - _deleting an entity_
+
+## Detailed design 📐
+
+This new Dialog component should be:
+
+- **uncontrolled component**
+  - _open/close state will need to be managed outside of the component_
+- **agnostic on child structure**
+  - _leveraging [dot notation](https://reactjs.org/docs/jsx-in-depth.html#using-dot-notation-for-jsx-type) to let consumers decide what to render_
+- **agnostic on trigger component**
+  - _we should not assume any shape/type for the dialog trigger_
+- **accessible**
+  - _making sure it adheres [to WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal) as much as possible_
+- **portal first**
+  - _leveraging [React Portals](https://reactjs.org/docs/portals.html) the dialog will mount at the root of the `<body>` in the HTML, no matter where it's rendered in the React tree to prevent issues with overlays and `z-index`_
