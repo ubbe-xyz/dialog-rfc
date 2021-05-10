@@ -2,11 +2,13 @@
 
 <img src="./.github/images/rfc.png" width="600" />
 
-A proposal for a flexible and accessible **Dialog component**. You can preview the RFC here and play with the **interactive examples** which are integrated on it.
+A proposal for a flexible and accessible **Dialog component**. You can preview [the RFC here](https://adverity-tech-test-ll6lmtial-lluia.vercel.app/) and play with the **interactive examples** which are integrated on it.
 
 <img src="./.github/images/dialog-open.png" width="600" />
 
 ## Running locally 🔖
+
+Alternatively you can run the application locally.
 
 Before you start, you will need:
 
