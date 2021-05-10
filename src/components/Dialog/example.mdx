@@ -12,30 +12,32 @@ The aim of this proposal is to illustrate the possible interface for a **Dialog 
 <BasicExample />
 
 ```tsx
-import { Dialog, Button } from './components'
-
-<Dialog.Trigger as={Button}>Open Dialog</Dialog.Trigger>
+import { Dialog, Button } from "./components";
 // ...
-<Dialog isOpen={true}>
-  <Dialog.Header
-    title="Delete User?"
-    onClose={close}
-  />
+<Dialog isOpen={visible} onClose={closeDialog} aria-label="Delete user">
+  <Dialog.Trigger onClick={openDialog}>Delete user</Dialog.Trigger>
+  <Dialog.Header title="Delete user?" onClose={closeDialog} />
   <Dialog.Content>
-    <Text>This will permanently remove John Doe, are you sure?</Text>
+    This will permanently delete John Doe. This action cannot be undone.
   </Dialog.Content>
   <Dialog.Footer>
-    <ActionButtons>
-      <Button variant="secondary">Cancel</Button>
-      <Button>Delete</Button>
-    </ActionButtons>
+    <Button
+      size="small"
+      variant="error"
+      onClick={() => {
+        window.alert("User John Doe was deleted.");
+        closeDialog();
+      }}
+    >
+      Delete user
+    </Button>
   </Dialog.Footer>
-</Dialog>
+</Dialog>;
 ```
 
 ## Motivation ☕️
 
-We want to have a `<Dialog />` component that can be customized to server different use cases and different content, to suit different use-cases like:
+We want to have a `<Dialog />` component that can be customized to serve different content for different use-cases like:
 
 - _editing a document_
 - _warning before applying some changes_
@@ -44,22 +46,22 @@ We want to have a `<Dialog />` component that can be customized to server differ
 
 <ComplexExample />
 
-We also want to able to trigger a dialog from different type of elements (buttons, links, etc...) and from multiple locations within a single page.
+We also want to able to trigger the dialog from different types of elements (buttons, links, etc...) and from multiple locations within a single page.
 
 ## Detailed design 📐
 
-This new Dialog component should be:
+This new dialog component should:
 
-- **explicit open/close state**
+- **have explicit open/close state**
   - _open/close state will need to be managed outside of the component_
-- **agnostic on child structure**
+- **be agnostic on child structure**
   - _leveraging [dot notation](https://reactjs.org/docs/jsx-in-depth.html#using-dot-notation-for-jsx-type) to let consumers decide what to render_
-- **agnostic on trigger component**
+- **be agnostic on the trigger component**
   - _we should not assume any shape/type for the dialog trigger_
-- **accessible**
+- **be accessible**
   - _making sure it adheres [to WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal) as much as possible_
-- **portal first**
-  - _leveraging [React Portals](https://reactjs.org/docs/portals.html) the dialog will mount at the root of the `<body>` in the HTML, no matter where it's rendered in the React tree to prevent issues with overlays and `z-index`_
+- **be portal first**
+  - _leveraging [React Portals](https://reactjs.org/docs/portals.html) the dialog will mount at the root we designate, to prevent issues with `z-index` overlaps amongst others_
 
 We should be able to render the dialog with/without a header/footer:
 
@@ -97,7 +99,7 @@ We should be able to render the dialog with/without a header/footer:
 
 ### Setup
 
-As a pre-requesite for `<Dialog />` to render properly, we need to render its root next to the application component tree root:
+As a pre-requesite, we need to render its root next to the application component tree root:
 
 ```tsx
 import { Dialog } from './components'
@@ -116,17 +118,19 @@ We render the dialog on a portal to prevent `z-index` overlaps amongst other iss
 
 ### Keyboard navigation
 
-According to [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal), when opening the `<Dialog.Header />` (if present), if not `<Dialog.Content />`, should be on focus.
+According to [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal), when opening the `<Dialog.Header />` (if present, if not `<Dialog.Content />`), should be on focus.
 
-When pressing `TAB`, focus should move to the next **dialog section**, pressing `TAB + SHIFT` should move focus to the previous **dialog section**.
+When pressing `TAB`, focus should should move to the next **dialog section**, pressing `TAB + SHIFT` should move focus to the previous **dialog section**.
 
 Pressing `ESC` should close the dialog.
+
+Pressing `ENTER` or `SPACE` when the dialog trigger is focused should open the dialog.
 
 All this focus management should be handled internally by the component, the user of the dialog should not need to declare any props to manage this.
 
 ### State management
 
-All state management is handled by the component rendering the dialog. Whether the dialog is open or not is controlled though the `<Dialog isOpen />` prop:
+All state management is handled by the component rendering the dialog. The dialog open state is controlled though the `<Dialog isOpen />` prop:
 
 ```tsx
 function MyComponent() {
@@ -154,7 +158,7 @@ function MyComponent() {
 }
 ```
 
-This provides a lot of flexbility given the dialog can be open / closed in different situations without the need for the `<Dialog />` to know explicitly which child click is gonna cause to close it.
+This provides a lot of flexbility given the dialog can be open / closed in different situations without the need for the `<Dialog />` to know explicitly which child caused to close it.
 
 There's three main ways to close the dialog:
 
@@ -166,7 +170,7 @@ There's three main ways to close the dialog:
 
 ### Accessibility
 
-`<Dialog />` already implements all the relevant [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal) roles and labels to adhere to the specification without the need for the user to assign manually aria attributes (aside from labelling `<Dialog />`).
+`<Dialog />` should implement all the relevant [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#dialog_modal) roles and labels to adhere to the specification without the need for the user, as much as possible, to assign manually HTML ARIA attributes.
 
 ⚠️ &nbsp;It's important to use `<Dialog.Trigger />` to render the dialog disclosure. You can pass any component to it:
 
@@ -182,12 +186,11 @@ There's three main ways to close the dialog:
   </Dialog.Trigger>
 ```
 
-This ensure that that the relation between the dialog disclosure and the dialog component is marked correctly via ARIA attributes for assistive devices.
-It also makes the trigger launch the dialog when the user press `ENTER` or `SPACE` as specified by **WAI-ARIA**.
+Using `<Dialog.Trigger />` ensures that the relation between the dialog disclosure and the dialog component is marked correctly via ARIA attributes for assistive devices.
 
 ## Drawbacks 👻
 
-Implementing a fully accessible and customizable `<Dialog />` component is not an easy task. Instead of writing our own and having to maintain the logic we could built on top of [Reakit#Dialog](https://reakit.io/docs/dialog/) or [ReactUI#Dialog](https://reach.tech/dialog/) which are un-opinionated on styling but would take away the burden of ensuring accessibility from us.
+Implementing a fully accessible and customizable `<Dialog />` component is not an easy task. Instead of writing our own and having to maintain the logic we could built on top of [Reakit#Dialog](https://reakit.io/docs/dialog/) or [ReactUI#Dialog](https://reach.tech/dialog/) which are un-opinionated on styling but would take away the burden of accessibility from us.
 
 ## Alternatives ⤴
 
