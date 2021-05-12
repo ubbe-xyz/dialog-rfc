@@ -1,4 +1,4 @@
-# Adverity Tech Test
+# Dialog RFC
 
 <img src="./.github/images/rfc.png" width="600" />
 
