@@ -25,7 +25,7 @@ $ yarn
 And run both the API and Development server:
 
 ```bash
-$ yarn dev
+$ yarn start
 ```
 
 From there, you can open the app by visiting [`localhost:3000`](http://localhost:3000/) on your browser.
