@@ -2,7 +2,7 @@
 
 <img src="./.github/images/rfc.png" width="600" />
 
-A proposal for a flexible and accessible **Dialog component**. You can preview [the RFC here](https://adverity-tech-test.vercel.app/) and play with the **interactive examples** which are integrated on it.
+A proposal for a flexible and accessible **Dialog component**. You can preview [the RFC here](https://dialog-rfc.vercel.app/) and play with the **interactive examples** which are integrated on it.
 
 <img src="./.github/images/dialog-open.png" width="600" />
 
